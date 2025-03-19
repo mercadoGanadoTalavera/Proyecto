@@ -1,30 +1,30 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
-class Comentario extends Model {}
+class Tipo extends Model {}
 
-Comentario.init(
+Tipo.init(
     {
-        id_comentario: {
+        id_tipo: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
         },
-        fecha: {
-            type: DataTypes.DATE,
+        nombre: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
         descripcion: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            type: DataTypes.TEXT,
+            allowNull: true,
         }
     },
     {
         sequelize,
-        modelName: 'Comentario',
-        tableName: 'comentario', // minúscula
+        modelName: 'Tipo',
+        tableName: 'tipo', 
         timestamps: false
     }
 );
 
-module.exports = Comentario;
+module.exports = Tipo;

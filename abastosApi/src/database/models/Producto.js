@@ -2,8 +2,6 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
 class Producto extends Model {}
-// DEFINICION DE ATRIBUTOS DE LA ENTIDAD
-// CARACTERISTICAS Y OBSERVACIONES CAMPOS NO REQUERIDOS
 
 Producto.init(
     {
@@ -16,23 +14,29 @@ Producto.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        tipo: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
         id_categoria: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,  // Puede ser NULL
             references: {
-                model: "Categoria",
+                model: "categoria",
                 key: "id_categoria"
             },
-            onDelete: "CASCADE"
+            onDelete: "SET NULL"
         },
-     }, {
+        id_tipo: {
+            type: DataTypes.INTEGER,
+            allowNull: true,  // Puede ser NULL
+            references: {
+                model: "tipo",
+                key: "id_tipo"
+            },
+            onDelete: "SET NULL"
+        }
+    },
+    {
         sequelize,
         modelName: 'Producto',
-        tableName: 'Producto',
+        tableName: 'producto', // minúscula
         timestamps: false
     }
 );

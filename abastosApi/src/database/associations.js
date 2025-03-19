@@ -2,18 +2,20 @@ const Categorias = require("./models/Categorias");
 const Producto = require("./models/Producto");
 const Precio = require("./models/Precio");
 const Comentario = require("./models/Comentario");
+const Tipo = require("./models/Tipo");  
 
-// Relacion Categoria crea Producto
+// Relación Categoría - Producto (1:N)
+Categorias.hasMany(Producto, { foreignKey: 'id_categoria' });
+Producto.belongsTo(Categorias, { foreignKey: 'id_categoria' });
 
-Categorias.hasMany(Producto, { foreignKey: 'id_categorias'});
-Producto.belongsTo(Categorias, { foreignKey: 'id_categorias'});
+// Relación Producto - Tipo (1:N opcional)
+Tipo.hasMany(Producto, { foreignKey: 'id_tipo' });
+Producto.belongsTo(Tipo, { foreignKey: 'id_tipo' });
 
-// Relación Producto tiene Precio 1:N
+// Relación Producto - Precio (1:N con eliminación en cascada)
+Producto.hasMany(Precio, { foreignKey: 'id_producto', onDelete: 'CASCADE' });
+Precio.belongsTo(Producto, { foreignKey: 'id_producto' });
 
-Producto.hasMany(Precio, { foreignKey: 'id_Producto'});
-Precio.belongsTo(Producto, { foreignKey: 'id_Producto'});
-
-// Relación Precio tiene Comentario 1:N
-
-Precio.hasMany(Comentario, { foreignKey: 'id_Precio', onDelete: 'CASCADE'});
-Comentario.belongsTo(Precio, { foreignKey: 'id_Precio'});
+// Relación Precio - Comentario (1:1 opcional)
+Comentario.belongsTo(Precio, { foreignKey: 'id_comentario' });
+Precio.hasOne(Comentario, { foreignKey: 'id_comentario' });

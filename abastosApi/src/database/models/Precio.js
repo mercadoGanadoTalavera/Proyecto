@@ -2,8 +2,6 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
 class Precio extends Model {}
-// DEFINICION DE ATRIBUTOS DE LA ENTIDAD
-// CARACTERISTICAS Y OBSERVACIONES CAMPOS NO REQUERIDOS
 
 Precio.init(
     {
@@ -18,27 +16,27 @@ Precio.init(
         },
         precio_actual: {
             type: DataTypes.DECIMAL(10,2),
-            allowNull: false,
+            allowNull: true,  // En la BD puede ser NULL
         },
         precio_actual_min: {
             type: DataTypes.DECIMAL(10,2),
-            allowNull: false,
+            allowNull: true,
         },
         precio_actual_max: {
             type: DataTypes.DECIMAL(10,2),
-            allowNull: false,
+            allowNull: true,
         },
         precio_anterior: {
             type: DataTypes.DECIMAL(10,2),
-            allowNull: false,
+            allowNull: true,
         },
         precio_anterior_min: {
             type: DataTypes.DECIMAL(10,2),
-            allowNull: false,
+            allowNull: true,
         },
         precio_anterior_max: {
             type: DataTypes.DECIMAL(10,2),
-            allowNull: false,
+            allowNull: true,
         },
         unidad_medida: {
             type: DataTypes.STRING,
@@ -46,26 +44,27 @@ Precio.init(
         },
         id_comentario: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,  // Puede ser NULL
             references: {
-                model: "Comentario",
+                model: "comentario",
                 key: "id_comentario"
             },
-            onDelete: "CASCADE"
+            onDelete: "SET NULL"
         },
         id_producto: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: "Producto",
+                model: "producto",
                 key: "id_producto"
             },
             onDelete: "CASCADE"
-     },
-     }, {
+        }
+    },
+    {
         sequelize,
         modelName: 'Precio',
-        tableName: 'Precio',
+        tableName: 'precio', // minúscula
         timestamps: false
     }
 );
