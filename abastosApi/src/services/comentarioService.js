@@ -52,6 +52,7 @@ const deleteComentario = async (id) => {
     }
 };
 
+
 // Exportar funciones
 module.exports = {
     getAllComentarios,

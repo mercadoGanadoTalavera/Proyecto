@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-03-2025 a las 10:39:25
+-- Tiempo de generación: 20-03-2025 a las 09:44:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `mercado_abastos`
+-- Base de datos: `mercadoabastos`
 --
 
 -- --------------------------------------------------------
@@ -42,26 +42,6 @@ INSERT INTO `categoria` (`id_categoria`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `comentario`
---
-
-CREATE TABLE `comentario` (
-  `id_comentario` int(11) NOT NULL,
-  `id_precio` int(11) NOT NULL,
-  `fecha` date NOT NULL,
-  `descripcion` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `comentario`
---
-
-INSERT INTO `comentario` (`id_comentario`, `id_precio`, `fecha`, `descripcion`) VALUES
-(1, 1, '2025-03-05', 'Mucha oferta y poco consumo.');
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `precio`
 --
 
@@ -75,16 +55,15 @@ CREATE TABLE `precio` (
   `precio_anterior` decimal(10,2) DEFAULT NULL,
   `precio_anterior_min` decimal(10,2) DEFAULT NULL,
   `precio_anterior_max` decimal(10,2) DEFAULT NULL,
-  `unidad_medida` varchar(20) NOT NULL,
-  `id_comentario` int(11) DEFAULT NULL
+  `unidad_medida` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `precio`
 --
 
-INSERT INTO `precio` (`id_precio`, `id_producto`, `fecha`, `precio_actual`, `precio_actual_min`, `precio_actual_max`, `precio_anterior`, `precio_anterior_min`, `precio_anterior_max`, `unidad_medida`, `id_comentario`) VALUES
-(1, 1, '2025-03-05', NULL, 247.00, 247.00, NULL, 247.00, 247.00, '', 1);
+INSERT INTO `precio` (`id_precio`, `id_producto`, `fecha`, `precio_actual`, `precio_actual_min`, `precio_actual_max`, `precio_anterior`, `precio_anterior_min`, `precio_anterior_max`, `unidad_medida`) VALUES
+(1, 1, '2025-03-05', NULL, 247.00, 247.00, NULL, 247.00, 247.00, '');
 
 -- --------------------------------------------------------
 
@@ -95,7 +74,6 @@ INSERT INTO `precio` (`id_precio`, `id_producto`, `fecha`, `precio_actual`, `pre
 CREATE TABLE `producto` (
   `id_producto` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `tipo` varchar(50) NOT NULL,
   `id_categoria` int(11) DEFAULT NULL,
   `id_tipo` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -104,8 +82,8 @@ CREATE TABLE `producto` (
 -- Volcado de datos para la tabla `producto`
 --
 
-INSERT INTO `producto` (`id_producto`, `nombre`, `tipo`, `id_categoria`, `id_tipo`) VALUES
-(1, 'maiz', 'cereal', 1, 1);
+INSERT INTO `producto` (`id_producto`, `nombre`, `id_categoria`, `id_tipo`) VALUES
+(1, 'maiz', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -116,15 +94,16 @@ INSERT INTO `producto` (`id_producto`, `nombre`, `tipo`, `id_categoria`, `id_tip
 CREATE TABLE `tipo` (
   `id_tipo` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `descripcion` text DEFAULT NULL
+  `descripcion` text DEFAULT NULL,
+  `comentario` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `tipo`
 --
 
-INSERT INTO `tipo` (`id_tipo`, `nombre`, `descripcion`) VALUES
-(1, 'Tipo de Cereal', NULL);
+INSERT INTO `tipo` (`id_tipo`, `nombre`, `descripcion`, `comentario`) VALUES
+(1, 'Tipo de Cereal', NULL, NULL);
 
 --
 -- Índices para tablas volcadas
@@ -137,19 +116,11 @@ ALTER TABLE `categoria`
   ADD PRIMARY KEY (`id_categoria`);
 
 --
--- Indices de la tabla `comentario`
---
-ALTER TABLE `comentario`
-  ADD PRIMARY KEY (`id_comentario`),
-  ADD KEY `id_precio` (`id_precio`);
-
---
 -- Indices de la tabla `precio`
 --
 ALTER TABLE `precio`
   ADD PRIMARY KEY (`id_precio`),
-  ADD KEY `id_producto` (`id_producto`),
-  ADD KEY `fk_precio_comentario` (`id_comentario`);
+  ADD KEY `id_producto` (`id_producto`);
 
 --
 -- Indices de la tabla `producto`
@@ -176,12 +147,6 @@ ALTER TABLE `categoria`
   MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `comentario`
---
-ALTER TABLE `comentario`
-  MODIFY `id_comentario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT de la tabla `precio`
 --
 ALTER TABLE `precio`
@@ -204,16 +169,9 @@ ALTER TABLE `tipo`
 --
 
 --
--- Filtros para la tabla `comentario`
---
-ALTER TABLE `comentario`
-  ADD CONSTRAINT `comentario_ibfk_1` FOREIGN KEY (`id_precio`) REFERENCES `precio` (`id_precio`) ON DELETE CASCADE;
-
---
 -- Filtros para la tabla `precio`
 --
 ALTER TABLE `precio`
-  ADD CONSTRAINT `fk_precio_comentario` FOREIGN KEY (`id_comentario`) REFERENCES `comentario` (`id_comentario`) ON DELETE SET NULL,
   ADD CONSTRAINT `precio_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON DELETE CASCADE;
 
 --
