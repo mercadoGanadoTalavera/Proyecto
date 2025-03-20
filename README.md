@@ -63,7 +63,7 @@ Para instalar y ejecutar el proyecto localmente, siga estos pasos:
 
 ## Uso
 
-- **Acceder al API:** `http://localhost:5000/api`
+- **Acceder al API:** `http://localhost:3000/mercado`
 - **Consultar información de lonjas:**
   ```sh
   curl -X GET http://localhost:5000/api/lonjas
