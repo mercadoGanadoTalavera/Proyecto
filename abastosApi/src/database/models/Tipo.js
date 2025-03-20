@@ -17,6 +17,10 @@ Tipo.init(
         descripcion: {
             type: DataTypes.TEXT,
             allowNull: true,
+        },
+        comentario: {
+            type: DataTypes.TEXT,
+            allowNull: true,
         }
     },
     {
