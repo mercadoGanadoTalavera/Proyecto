@@ -19,7 +19,7 @@ Tipo.init(
             allowNull: true,
         },
         comentario: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING(100),
             allowNull: true,
         }
     },

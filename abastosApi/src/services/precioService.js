@@ -1,6 +1,5 @@
 const Precio = require("../models/Precio");
 const Producto = require("../models/Producto");
-const Comentario = require("../models/Comentario");
 
 // Obtener todos los precios
 const getAllPrecios = async () => {
@@ -8,7 +7,6 @@ const getAllPrecios = async () => {
         return await Precio.findAll({
             include: [
                 { model: Producto, attributes: ["nombre"] }, // Incluye el nombre del producto
-                { model: Comentario, attributes: ["descripcion"] } // Incluye la descripción del comentario
             ],
             order: [['fecha', 'DESC']]
         });
@@ -25,7 +23,6 @@ const getPrecioById = async (id) => {
             where: { id_precio: id },
             include: [
                 { model: Producto, attributes: ["nombre"] },
-                { model: Comentario, attributes: ["descripcion"] }
             ]
         });
     } catch (error) {

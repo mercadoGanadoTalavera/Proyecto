@@ -1,7 +1,6 @@
-const Categorias = require("./models/Categorias");
+const Categorias = require("./models/Categoria");
 const Producto = require("./models/Producto");
 const Precio = require("./models/Precio");
-const Comentario = require("./models/Comentario");
 const Tipo = require("./models/Tipo");  
 
 // Relación Categoría - Producto (1:N)
@@ -16,6 +15,4 @@ Producto.belongsTo(Tipo, { foreignKey: 'id_tipo' });
 Producto.hasMany(Precio, { foreignKey: 'id_producto', onDelete: 'CASCADE' });
 Precio.belongsTo(Producto, { foreignKey: 'id_producto' });
 
-// Relación Precio - Comentario (1:1 opcional)
-Comentario.belongsTo(Precio, { foreignKey: 'id_comentario' });
-Precio.hasOne(Comentario, { foreignKey: 'id_comentario' });
+module.exports = { Categorias, Producto, Precio, Tipo };
