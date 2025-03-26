@@ -1,6 +1,6 @@
-const Producto = require("../models/Producto");
-const Categoria = require("../models/Categoria");
-const Tipo = require("../models/Tipo");
+const Producto = require("../database/models/Producto");
+const Categoria = require("../database/models/Categoria");
+const Tipo = require("../database/models/Tipo");
 
 // Obtener todos los productos
 const getAllProductos = async () => {
@@ -17,6 +17,16 @@ const getAllProductos = async () => {
         throw error;
     }
 };
+//Obtener productos por categoria
+const getProductosByCategoria = async (id_categoria) => {
+    try {
+        return await Producto.findAll({ where: { id_categoria } });
+    } catch (error) {
+        console.error("Error obteniendo productos por categoría:", error);
+        throw error;
+    }
+};
+
 
 // Obtener un producto por ID
 const getProductoById = async (id) => {
@@ -71,6 +81,7 @@ module.exports = {
     getAllProductos,
     getProductoById,
     createProducto,
+    getProductosByCategoria,
     updateProducto,
     deleteProducto
 };

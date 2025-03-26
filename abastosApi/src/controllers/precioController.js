@@ -57,6 +57,16 @@ const updatePrecio = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+//Obtener precios por producto
+const getPreciosByProducto = async (req, res) => {
+    try {
+        const precios = await precioService.getPreciosByProducto(req.params.id);
+        res.status(200).json(precios);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 // Eliminar un precio
 const deletePrecio = async (req, res) => {
@@ -72,6 +82,7 @@ const deletePrecio = async (req, res) => {
 module.exports = {
     getAllPrecios,
     getPrecioById,
+    getPreciosByProducto,
     createPrecio,
     updatePrecio,
     deletePrecio

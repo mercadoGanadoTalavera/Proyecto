@@ -13,10 +13,10 @@ const tipoRouter = require("./tipoRouter");
 //POSIBLE ENTIDAD USUARIO
 //apirouter.use("/usuarios", userRouter);
 
-apirouter.use("/categorias", middleware,categoriaRouter);
-apirouter.use("/precios", middleware,precioRouter);
-apirouter.use("/productoes", middleware,productoRouter);
-apirouter.use("/tipos", middleware,tipoRouter);
+apirouter.use("/categorias", categoriaRouter);
+apirouter.use("/precios", precioRouter);
+apirouter.use("/productos", productoRouter);
+apirouter.use("/tipos",tipoRouter);
 
 
 /* 

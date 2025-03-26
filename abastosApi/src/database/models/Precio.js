@@ -42,15 +42,6 @@ Precio.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        id_comentario: {
-            type: DataTypes.INTEGER,
-            allowNull: true,  // Puede ser NULL
-            references: {
-                model: "comentario",
-                key: "id_comentario"
-            },
-            onDelete: "SET NULL"
-        },
         id_producto: {
             type: DataTypes.INTEGER,
             allowNull: false,

@@ -9,6 +9,16 @@ const getAllProductos = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+//Obtener productos por categoria
+const getProductosByCategoria = async (req, res) => {
+    try {
+        const productos = await productoService.getProductosByCategoria(req.params.id);
+        res.status(200).json(productos);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 // Obtener un producto por ID
 const getProductoById = async (req, res) => {
@@ -56,6 +66,7 @@ const deleteProducto = async (req, res) => {
 module.exports = {
     getAllProductos,
     getProductoById,
+    getProductosByCategoria,
     createProducto,
     updateProducto,
     deleteProducto

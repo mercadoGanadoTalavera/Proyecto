@@ -1,5 +1,5 @@
-const Precio = require("../models/Precio");
-const Producto = require("../models/Producto");
+const Precio = require("../database/models/Precio");
+const Producto = require("../database/models/Producto");
 
 // Obtener todos los precios
 const getAllPrecios = async () => {
@@ -15,6 +15,21 @@ const getAllPrecios = async () => {
         throw error;
     }
 };
+
+//obtener precios por producto
+const getPreciosByProducto = async (id_producto) => {
+    try {
+        return await Precio.findAll({
+            where: { id_producto },
+            include: [{ model: Producto, attributes: ["nombre"] }],
+            order: [['fecha', 'DESC']]
+        });
+    } catch (error) {
+        console.error("Error obteniendo precios del producto:", error);
+        throw error;
+    }
+};
+
 
 // Obtener un precio por ID
 const getPrecioById = async (id) => {
@@ -69,6 +84,7 @@ const deletePrecio = async (id) => {
 // Exportar funciones
 module.exports = {
     getAllPrecios,
+    getPreciosByProducto,
     getPrecioById,
     createPrecio,
     updatePrecio,

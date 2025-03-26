@@ -1,4 +1,4 @@
-const Tipo = require("../models/Tipo");
+const Tipo = require("../database/models/Tipo");
 
 // Obtener todos los tipos
 const getAllTipos = async () => {
@@ -9,6 +9,27 @@ const getAllTipos = async () => {
         throw error;
     }
 };
+// Obtener tipos por ID de categoría
+const getTiposByCategoria = async (id_categoria) => {
+    try {
+        return await Tipo.findAll({ where: { id_categoria } });
+    } catch (error) {
+        console.error("Error obteniendo tipos por categoría:", error);
+        throw error;
+    }
+};
+
+// Obtener tipos por ID de producto
+const getTiposByProducto = async (id_producto) => {
+    try {
+        return await Tipo.findAll({ where: { id_producto } });
+    } catch (error) {
+        console.error("Error obteniendo tipos por producto:", error);
+        throw error;
+    }
+};
+
+
 
 // Obtener un tipo por ID
 const getTipoById = async (id) => {
@@ -56,6 +77,8 @@ const deleteTipo = async (id) => {
 module.exports = {
     getAllTipos,
     getTipoById,
+    getTiposByCategoria,
+    getTiposByProducto,
     createTipo,
     updateTipo,
     deleteTipo
