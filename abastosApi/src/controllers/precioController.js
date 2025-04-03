@@ -1,3 +1,4 @@
+
 const precioService = require("../services/precioService");
 
 // Obtener todos los precios
@@ -25,14 +26,16 @@ const getPrecioById = async (req, res) => {
 // Crear un nuevo precio con validación
 const createPrecio = async (req, res) => {
     try {
-        const { precio_actual, precio_actual_min, precio_actual_max } = req.body;
+        const {
+            precio_actual,
+            precio_anterior,
+            precio_actual_min,
+            precio_actual_max,
+            precio_anterior_min,
+            precio_anterior_max
+        } = req.body;
 
-        if (!precio_actual && (!precio_actual_min || !precio_actual_max)) {
-            return res.status(400).json({
-                error: "Debe proporcionar `precio_actual` o ambos `precio_actual_min` y `precio_actual_max`"
-            });
-        }
-
+        // Validar que se usen solo los campos correctos según tipo_precio (esto debe hacerse mejor desde registro)
         const precio = await precioService.createPrecio(req.body);
         res.status(201).json(precio);
     } catch (error) {
@@ -40,33 +43,15 @@ const createPrecio = async (req, res) => {
     }
 };
 
-// Actualizar un precio con validación
+// Actualizar un precio
 const updatePrecio = async (req, res) => {
     try {
-        const { precio_actual, precio_actual_min, precio_actual_max } = req.body;
-
-        if (!precio_actual && (!precio_actual_min || !precio_actual_max)) {
-            return res.status(400).json({
-                error: "Debe proporcionar `precio_actual` o ambos `precio_actual_min` y `precio_actual_max`"
-            });
-        }
-
         const result = await precioService.updatePrecio(req.params.id, req.body);
         res.status(200).json({ message: result });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-//Obtener precios por producto
-const getPreciosByProducto = async (req, res) => {
-    try {
-        const precios = await precioService.getPreciosByProducto(req.params.id);
-        res.status(200).json(precios);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
 
 // Eliminar un precio
 const deletePrecio = async (req, res) => {
@@ -78,11 +63,9 @@ const deletePrecio = async (req, res) => {
     }
 };
 
-// Exportar funciones
 module.exports = {
     getAllPrecios,
     getPrecioById,
-    getPreciosByProducto,
     createPrecio,
     updatePrecio,
     deletePrecio

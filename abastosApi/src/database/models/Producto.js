@@ -1,3 +1,4 @@
+
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
@@ -14,9 +15,20 @@ Producto.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        unidad_medida: {
+            type: DataTypes.STRING(50),
+            allowNull: false
+        },
+        tipo_precio: {
+            type: DataTypes.TINYINT,
+            allowNull: false,
+            validate: {
+                isIn: [[0, 1]]
+            }
+        },
         id_categoria: {
             type: DataTypes.INTEGER,
-            allowNull: true,  // Puede ser NULL
+            allowNull: true,
             references: {
                 model: "categoria",
                 key: "id_categoria"
@@ -25,7 +37,7 @@ Producto.init(
         },
         id_tipo: {
             type: DataTypes.INTEGER,
-            allowNull: true,  // Puede ser NULL
+            allowNull: true,
             references: {
                 model: "tipo",
                 key: "id_tipo"
@@ -36,7 +48,7 @@ Producto.init(
     {
         sequelize,
         modelName: 'Producto',
-        tableName: 'producto', // minúscula
+        tableName: 'producto',
         timestamps: false
     }
 );

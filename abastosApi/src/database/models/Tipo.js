@@ -1,3 +1,4 @@
+
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
@@ -17,16 +18,12 @@ Tipo.init(
         descripcion: {
             type: DataTypes.TEXT,
             allowNull: true,
-        },
-        comentario: {
-            type: DataTypes.STRING(100),
-            allowNull: true,
         }
     },
     {
         sequelize,
         modelName: 'Tipo',
-        tableName: 'tipo', 
+        tableName: 'tipo',
         timestamps: false
     }
 );

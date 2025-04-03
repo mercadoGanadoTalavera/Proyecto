@@ -1,18 +1,24 @@
+
 const Categoria = require("./models/Categoria");
 const Producto = require("./models/Producto");
 const Precio = require("./models/Precio");
-const Tipo = require("./models/Tipo");  
+const Tipo = require("./models/Tipo");
+const Registro = require("./models/Registro");
 
-// Relación Categoría - Producto (1:N)
+// Categoría - Producto
 Categoria.hasMany(Producto, { foreignKey: 'id_categoria' });
 Producto.belongsTo(Categoria, { foreignKey: 'id_categoria' });
 
-// Relación Producto - Tipo (1:N opcional)
+// Tipo - Producto
 Tipo.hasMany(Producto, { foreignKey: 'id_tipo' });
 Producto.belongsTo(Tipo, { foreignKey: 'id_tipo' });
 
-// Relación Producto - Precio (1:N con eliminación en cascada)
-Producto.hasMany(Precio, { foreignKey: 'id_producto', onDelete: 'CASCADE' });
-Precio.belongsTo(Producto, { foreignKey: 'id_producto' });
+// Producto - Registro
+Producto.hasMany(Registro, { foreignKey: 'id_producto' });
+Registro.belongsTo(Producto, { foreignKey: 'id_producto' });
 
-module.exports = { Categoria, Producto, Precio, Tipo };
+// Precio - Registro
+Precio.hasMany(Registro, { foreignKey: 'id_precio' });
+Registro.belongsTo(Precio, { foreignKey: 'id_precio' });
+
+module.exports = { Categoria, Producto, Precio, Tipo, Registro };

@@ -1,3 +1,4 @@
+
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
@@ -10,13 +11,9 @@ Precio.init(
             primaryKey: true,
             autoIncrement: true,
         },
-        fecha: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
         precio_actual: {
             type: DataTypes.DECIMAL(10,2),
-            allowNull: true,  // En la BD puede ser NULL
+            allowNull: true,
         },
         precio_actual_min: {
             type: DataTypes.DECIMAL(10,2),
@@ -37,25 +34,12 @@ Precio.init(
         precio_anterior_max: {
             type: DataTypes.DECIMAL(10,2),
             allowNull: true,
-        },
-        unidad_medida: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        id_producto: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: "producto",
-                key: "id_producto"
-            },
-            onDelete: "CASCADE"
         }
     },
     {
         sequelize,
         modelName: 'Precio',
-        tableName: 'precio', // minúscula
+        tableName: 'precio',
         timestamps: false
     }
 );

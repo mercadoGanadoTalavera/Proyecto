@@ -1,45 +1,20 @@
+
 const Precio = require("../database/models/Precio");
-const Producto = require("../database/models/Producto");
 
 // Obtener todos los precios
 const getAllPrecios = async () => {
     try {
-        return await Precio.findAll({
-            include: [
-                { model: Producto, attributes: ["nombre"] }, // Incluye el nombre del producto
-            ],
-            order: [['fecha', 'DESC']]
-        });
+        return await Precio.findAll({ order: [['id_precio', 'DESC']] });
     } catch (error) {
         console.error("Error obteniendo precios:", error);
         throw error;
     }
 };
 
-//obtener precios por producto
-const getPreciosByProducto = async (id_producto) => {
-    try {
-        return await Precio.findAll({
-            where: { id_producto },
-            include: [{ model: Producto, attributes: ["nombre"] }],
-            order: [['fecha', 'DESC']]
-        });
-    } catch (error) {
-        console.error("Error obteniendo precios del producto:", error);
-        throw error;
-    }
-};
-
-
 // Obtener un precio por ID
 const getPrecioById = async (id) => {
     try {
-        return await Precio.findOne({
-            where: { id_precio: id },
-            include: [
-                { model: Producto, attributes: ["nombre"] },
-            ]
-        });
+        return await Precio.findByPk(id);
     } catch (error) {
         console.error("Error obteniendo precio:", error);
         throw error;
@@ -81,10 +56,8 @@ const deletePrecio = async (id) => {
     }
 };
 
-// Exportar funciones
 module.exports = {
     getAllPrecios,
-    getPreciosByProducto,
     getPrecioById,
     createPrecio,
     updatePrecio,
