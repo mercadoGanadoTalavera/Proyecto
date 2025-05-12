@@ -10,27 +10,6 @@ const getAllTipos = async (req, res) => {
     }
 };
 
-// Obtener tipos por ID de categoría
-const getTiposByCategoria = async (req, res) => {
-    try {
-        const tipos = await tipoService.getTiposByCategoria(req.params.id);
-        res.status(200).json(tipos);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Obtener tipos por ID de producto
-const getTiposByProducto = async (req, res) => {
-    try {
-        const tipos = await tipoService.getTiposByProducto(req.params.id);
-        res.status(200).json(tipos);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-
 // Obtener un tipo por ID
 const getTipoById = async (req, res) => {
     try {
@@ -73,12 +52,9 @@ const deleteTipo = async (req, res) => {
     }
 };
 
-// Exportar funciones
 module.exports = {
     getAllTipos,
     getTipoById,
-    getTiposByCategoria,
-    getTiposByProducto,
     createTipo,
     updateTipo,
     deleteTipo

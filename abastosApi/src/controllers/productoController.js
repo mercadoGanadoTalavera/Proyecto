@@ -61,6 +61,17 @@ const deleteProducto = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+const getProductosPorFecha = async (req, res) => {
+    try {
+        const { fecha } = req.query;
+        if (!fecha) return res.status(400).json({ error: "Parámetro 'fecha' requerido" });
+        const productos = await productoService.getProductosPorFecha(fecha);
+        res.status(200).json(productos);
+    } catch (error) {
+        console.error("Error en getProductosPorFecha:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Exportar funciones
 module.exports = {
@@ -69,5 +80,6 @@ module.exports = {
     getProductosByCategoria,
     createProducto,
     updateProducto,
-    deleteProducto
+    deleteProducto,
+    getProductosPorFecha,
 };

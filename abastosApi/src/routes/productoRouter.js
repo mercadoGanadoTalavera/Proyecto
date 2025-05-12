@@ -7,5 +7,7 @@ productoRouter.get("/categoria/:id", producto.getProductosByCategoria);
 productoRouter.post("/create", producto.createProducto);
 productoRouter.put("/modify/:id", producto.updateProducto);
 productoRouter.delete("/delete/:id", producto.deleteProducto);
+productoRouter.get("/fecha", producto.getProductosPorFecha);
+
 
 module.exports = productoRouter;

@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Introducción de precios - Mercado Abastos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+
+    <h1 class="text-2xl font-bold mb-6">🧾 Introducir precios y comentarios</h1>
+
+    <!-- Selector de categoría -->
+    <labAel for="categoriaSelect" class="block mb-2 font-medium">Selecciona una categoría:</label>
+    <select id="categoriaSelect" class="mb-6 p-2 border rounded w-full max-w-md">
+        <option value="">-- Cargando categorías... --</option>
+    </select>
+
+    <!-- Contenedor para productos -->
+    <div id="productosContainer" class="space-y-4"></div>
+
+    <script>
+        const API_BASE = "http://localhost:3000/mercadoabastos";
+
+        async function cargarCategorias() {
+            const res = await fetch(`${API_BASE}/categorias/all`);
+            const categorias = await res.json();
+            const select = document.getElementById("categoriaSelect");
+
+            select.innerHTML = '<option value="">-- Selecciona una categoría --</option>';
+            categorias.forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat.id_categoria;
+                opt.textContent = cat.nombre;
+                select.appendChild(opt);
+            });
+        }
+
+        async function cargarProductosPorCategoria(idCategoria) {
+            const res = await fetch(`${API_BASE}/productos/categoria/${idCategoria}`);
+            const productos = await res.json();
+
+            // Ordenar por id_producto asc
+            productos.sort((a, b) => a.id_producto - b.id_producto);
+
+            const container = document.getElementById("productosContainer");
+            container.innerHTML = "";
+
+            productos.forEach(prod => {
+                const card = document.createElement("div");
+                card.className = "bg-white shadow-md rounded p-4 border";
+
+                card.innerHTML = `
+                    <h2 class="text-lg font-semibold mb-2">${prod.nombre}</h2>
+                    <p class="mb-2 text-sm text-gray-600">Unidad: ${prod.unidad_medida}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="number" step="0.01" placeholder="Precio actual" class="border p-2 rounded w-full" name="precio_actual_${prod.id_producto}">
+                        <input type="number" step="0.01" placeholder="Precio anterior" class="border p-2 rounded w-full" name="precio_anterior_${prod.id_producto}">
+                        <input type="text" placeholder="Comentario" class="border p-2 rounded w-full" name="comentario_${prod.id_producto}">
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById("categoriaSelect").addEventListener("change", (e) => {
+            if (e.target.value) {
+                cargarProductosPorCategoria(e.target.value);
+            } else {
+                document.getElementById("productosContainer").innerHTML = "";
+            }
+        });
+
+        // Carga inicial
+        cargarCategorias();
+    </script>
+
+</body>
+</html>

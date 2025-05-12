@@ -1,10 +1,17 @@
-
 const Precio = require("../database/models/Precio");
+const Producto = require("../database/models/Producto");
+const Sesion = require("../database/models/Sesion");
 
-// Obtener todos los precios
+// Obtener todos los precios con su producto y sesión
 const getAllPrecios = async () => {
     try {
-        return await Precio.findAll({ order: [['id_precio', 'DESC']] });
+        return await Precio.findAll({
+            include: [
+                { model: Producto, attributes: ["nombre"] },
+                { model: Sesion }
+            ],
+            order: [['id_precio', 'DESC']]
+        });
     } catch (error) {
         console.error("Error obteniendo precios:", error);
         throw error;
@@ -14,7 +21,12 @@ const getAllPrecios = async () => {
 // Obtener un precio por ID
 const getPrecioById = async (id) => {
     try {
-        return await Precio.findByPk(id);
+        return await Precio.findByPk(id, {
+            include: [
+                { model: Producto, attributes: ["nombre"] },
+                { model: Sesion }
+            ]
+        });
     } catch (error) {
         console.error("Error obteniendo precio:", error);
         throw error;
@@ -56,9 +68,27 @@ const deletePrecio = async (id) => {
     }
 };
 
+// Obtener todos los precios de un producto
+const getPreciosByProducto = async (id_producto) => {
+    try {
+        return await Precio.findAll({
+            where: { id_producto },
+            include: [
+                { model: Sesion },
+                { model: Producto, attributes: ['nombre'] }
+            ],
+            order: [['id_precio', 'DESC']]
+        });
+    } catch (error) {
+        console.error("Error obteniendo precios por producto:", error);
+        throw error;
+    }
+};
+
 module.exports = {
     getAllPrecios,
     getPrecioById,
+    getPreciosByProducto,
     createPrecio,
     updatePrecio,
     deletePrecio

@@ -1,9 +1,9 @@
-
 const Categoria = require("./models/Categoria");
 const Producto = require("./models/Producto");
 const Precio = require("./models/Precio");
 const Tipo = require("./models/Tipo");
-const Registro = require("./models/Registro");
+const Sesion = require("./models/Sesion");
+const SesionAlmacenanTipo = require("./models/SesionAlmacenanTipo");
 
 // Categoría - Producto
 Categoria.hasMany(Producto, { foreignKey: 'id_categoria' });
@@ -13,12 +13,35 @@ Producto.belongsTo(Categoria, { foreignKey: 'id_categoria' });
 Tipo.hasMany(Producto, { foreignKey: 'id_tipo' });
 Producto.belongsTo(Tipo, { foreignKey: 'id_tipo' });
 
-// Producto - Registro
-Producto.hasMany(Registro, { foreignKey: 'id_producto' });
-Registro.belongsTo(Producto, { foreignKey: 'id_producto' });
+// Categoría - Sesion
+Categoria.hasMany(Sesion, { foreignKey: 'id_categoria' });
+Sesion.belongsTo(Categoria, { foreignKey: 'id_categoria' });
 
-// Precio - Registro
-Precio.hasMany(Registro, { foreignKey: 'id_precio' });
-Registro.belongsTo(Precio, { foreignKey: 'id_precio' });
+// Producto - Precio
+Producto.hasMany(Precio, { foreignKey: 'id_producto' });
+Precio.belongsTo(Producto, { foreignKey: 'id_producto' });
 
-module.exports = { Categoria, Producto, Precio, Tipo, Registro };
+// Sesion - Precio
+Sesion.hasMany(Precio, { foreignKey: 'id_sesion' });
+Precio.belongsTo(Sesion, { foreignKey: 'id_sesion' });
+
+// Tipo <-> Sesion (relación N:M)
+Tipo.belongsToMany(Sesion, {
+    through: SesionAlmacenanTipo,
+    foreignKey: 'id_tipo',
+    otherKey: 'id_sesion'
+});
+Sesion.belongsToMany(Tipo, {
+    through: SesionAlmacenanTipo,
+    foreignKey: 'id_sesion',
+    otherKey: 'id_tipo'
+});
+
+module.exports = {
+  Categoria,
+  Producto,
+  Precio,
+  Tipo,
+  Sesion,
+  SesionAlmacenanTipo
+};

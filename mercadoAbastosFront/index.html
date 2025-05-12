@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mercado Abastos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+  <!-- Pantalla principal -->
+  <div id="inicio" class="max-w-4xl mx-auto bg-white p-6 rounded shadow text-center">
+    <h1 class="text-2xl font-bold mb-6">¿Qué deseas hacer?</h1>
+    <div class="space-x-4">
+      <button id="btnCrearPDF" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">Crear PDF</button>
+      <button id="btnBuscar" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">Buscar</button>
+    </div>
+  </div>
+
+  <!-- Crear PDF -->
+  <div id="crearPDF" class="hidden max-w-6xl mx-auto bg-white p-6 rounded shadow mt-6">
+    <h2 class="text-xl font-semibold mb-4">Selecciona una categoría</h2>
+    <div id="categoriasContainer" class="flex flex-wrap gap-3 mb-6"></div>
+    <div id="formularioProductos"></div>
+    <div class="mt-4 flex justify-between">
+      <button id="volverInicioDesdePDF" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Volver</button>
+      <div class="space-x-3">
+        <button id="generarPDFBtn" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Generar PDF</button>
+        <button id="guardarCambiosBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 hidden">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buscar -->
+  <div id="busqueda" class="hidden max-w-6xl mx-auto bg-white p-6 rounded shadow mt-6">
+    <h2 class="text-xl font-semibold mb-4">Buscar productos por sesión</h2>
+    <div class="flex items-center space-x-4 mb-6">
+      <label for="fechaBusqueda" class="font-semibold">Fecha:</label>
+      <input type="date" id="fechaBusqueda" class="border px-3 py-2 rounded" />
+      <button id="buscarFechaBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Buscar</button>
+    </div>
+    <table class="table-auto w-full border mb-4">
+      <thead class="bg-gray-200"><tr><th>ID</th><th>Fecha</th><th>Categoría</th></tr></thead>
+      <tbody id="sesionesBody" class="bg-white"></tbody>
+    </table>
+    <h3 class="text-lg font-semibold mt-6">Productos de la sesión</h3>
+    <table class="table-auto w-full border mt-2">
+      <thead class="bg-gray-200"><tr><th>Producto</th><th>Unidad</th><th>Tipo</th><th>Precio actual</th><th>Precio anterior</th></tr></thead>
+      <tbody id="productosBody" class="bg-white"></tbody>
+    </table>
+    <div class="mt-4 text-left">
+      <button id="volverInicioDesdeBusqueda" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Volver</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

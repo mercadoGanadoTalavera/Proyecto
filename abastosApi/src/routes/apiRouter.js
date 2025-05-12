@@ -5,13 +5,17 @@ const categoriaRouter = require("./categoriaRouter");
 const precioRouter = require("./precioRouter");
 const productoRouter = require("./productoRouter");
 const tipoRouter = require("./tipoRouter");
-const registroRouter = require("./registroRouter");
+const sesionRouter = require("./sesionRouter"); 
+const almacenRouter = require("./almacenRouter");
 
 apirouter.use("/categorias", categoriaRouter);
 apirouter.use("/precios", precioRouter);
 apirouter.use("/productos", productoRouter);
 apirouter.use("/tipos", tipoRouter);
-apirouter.use("/registros", registroRouter);
+apirouter.use("/sesiones", sesionRouter);
+apirouter.use("/almacenes", almacenRouter); 
+
+module.exports = apirouter;
 
 
 

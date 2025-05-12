@@ -1,4 +1,3 @@
-
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
@@ -34,6 +33,22 @@ Precio.init(
         precio_anterior_max: {
             type: DataTypes.DECIMAL(10,2),
             allowNull: true,
+        },
+        id_producto: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: "producto",
+                key: "id_producto"
+            }
+        },
+        id_sesion: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: "sesion",
+                key: "id_sesion"
+            }
         }
     },
     {

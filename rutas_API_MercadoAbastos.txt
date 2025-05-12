@@ -1,4 +1,3 @@
-
 =======================
 📁 RUTAS DE LA API
 =======================
@@ -8,39 +7,53 @@
 ----------------------------------------
 📂 /categorias
 ----------------------------------------
-GET    http://localhost:3000/mercadoabastos/categorias/all
-GET    http://localhost:3000/mercadoabastos/categorias/:id
-POST   http://localhost:3000/mercadoabastos/categorias/create
-PUT    http://localhost:3000/mercadoabastos/categorias/modify/:id
-DELETE http://localhost:3000/mercadoabastos/categorias/delete/:id
-
-----------------------------------------
-📂 /precios
-----------------------------------------
-GET    http://localhost:3000/mercadoabastos/precios/all
-GET    http://localhost:3000/mercadoabastos/precios/:id
-GET    http://localhost:3000/mercadoabastos/precios/producto/:id
-POST   http://localhost:3000/mercadoabastos/precios/create
-PUT    http://localhost:3000/mercadoabastos/precios/modify/:id
-DELETE http://localhost:3000/mercadoabastos/precios/delete/:id
-
-----------------------------------------
-📂 /productos
-----------------------------------------
-GET    http://localhost:3000/mercadoabastos/productos/all
-GET    http://localhost:3000/mercadoabastos/productos/:id
-GET    http://localhost:3000/mercadoabastos/productos/categoria/:id
-POST   http://localhost:3000/mercadoabastos/productos/create
-PUT    http://localhost:3000/mercadoabastos/productos/modify/:id
-DELETE http://localhost:3000/mercadoabastos/productos/delete/:id
+GET    /categorias/all
+GET    /categorias/:id
+POST   /categorias/create
+PUT    /categorias/modify/:id
+DELETE /categorias/delete/:id
 
 ----------------------------------------
 📂 /tipos
 ----------------------------------------
-GET    http://localhost:3000/mercadoabastos/tipos/all
-GET    http://localhost:3000/mercadoabastos/tipos/:id
-GET    http://localhost:3000/mercadoabastos/tipos/categoria/:id
-GET    http://localhost:3000/mercadoabastos/tipos/producto/:id
-POST   http://localhost:3000/mercadoabastos/tipos/create
-PUT    http://localhost:3000/mercadoabastos/tipos/modify/:id
-DELETE http://localhost:3000/mercadoabastos/tipos/delete/:id
+GET    /tipos/all
+GET    /tipos/:id
+POST   /tipos/create
+PUT    /tipos/modify/:id
+DELETE /tipos/delete/:id
+
+----------------------------------------
+📂 /productos
+----------------------------------------
+GET    /productos/all
+GET    /productos/:id
+GET    /productos/categoria/:id
+POST   /productos/create
+PUT    /productos/modify/:id
+DELETE /productos/delete/:id
+
+----------------------------------------
+📂 /precios
+----------------------------------------
+GET    /precios/all
+GET    /precios/:id
+GET    /precios/producto/:id
+POST   /precios/create
+PUT    /precios/modify/:id
+DELETE /precios/delete/:id
+
+----------------------------------------
+📂 /sesiones
+----------------------------------------
+GET    /sesiones/all
+GET    /sesiones/:id
+GET    /sesiones/categoria/:id_categoria
+POST   /sesiones/create
+DELETE /sesiones/delete/:id
+
+----------------------------------------
+📂 /almacenes
+----------------------------------------
+GET    /almacenes/:id_sesion
+POST   /almacenes/create
+DELETE /almacenes/delete/:id_sesion/:id_tipo

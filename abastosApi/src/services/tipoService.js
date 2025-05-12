@@ -1,4 +1,3 @@
-
 const Tipo = require("../database/models/Tipo");
 
 // Obtener todos los tipos

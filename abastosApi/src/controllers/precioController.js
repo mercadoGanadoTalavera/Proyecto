@@ -1,4 +1,3 @@
-
 const precioService = require("../services/precioService");
 
 // Obtener todos los precios
@@ -23,19 +22,19 @@ const getPrecioById = async (req, res) => {
     }
 };
 
-// Crear un nuevo precio con validación
+// Obtener precios por producto
+const getPreciosByProducto = async (req, res) => {
+    try {
+        const precios = await precioService.getPreciosByProducto(req.params.id);
+        res.status(200).json(precios);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Crear un nuevo precio
 const createPrecio = async (req, res) => {
     try {
-        const {
-            precio_actual,
-            precio_anterior,
-            precio_actual_min,
-            precio_actual_max,
-            precio_anterior_min,
-            precio_anterior_max
-        } = req.body;
-
-        // Validar que se usen solo los campos correctos según tipo_precio (esto debe hacerse mejor desde registro)
         const precio = await precioService.createPrecio(req.body);
         res.status(201).json(precio);
     } catch (error) {
@@ -66,6 +65,7 @@ const deletePrecio = async (req, res) => {
 module.exports = {
     getAllPrecios,
     getPrecioById,
+    getPreciosByProducto,
     createPrecio,
     updatePrecio,
     deletePrecio
