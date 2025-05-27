@@ -1,11 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const sesionController = require("../controllers/sesionController");
 
-router.get("/:id_sesion/productos", sesionController.getProductosPorSesion);
-router.get("/fecha", sesionController.getSesionesPorFecha);
+const {
+  getSesionesPorFecha,
+  getProductosDeSesion,
+  crearSesionYPrecios,
+  descargarPDF
+} = require("../controllers/sesionController");
 
-// NUEVA RUTA PARA GUARDAR SESIÓN Y PRECIOS
-router.post("/", sesionController.crearSesionYPrecios);
+router.get("/fecha", getSesionesPorFecha);
+router.get("/:id_sesion/productos", getProductosDeSesion);
+router.post("/", crearSesionYPrecios);
+router.get("/:id_sesion/pdf", descargarPDF);
 
 module.exports = router;
