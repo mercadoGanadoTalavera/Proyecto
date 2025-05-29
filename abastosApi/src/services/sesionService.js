@@ -11,21 +11,45 @@ const { Op } = require("sequelize");
 const getSesionesPorFecha = async (fecha) => {
   return await Sesion.findAll({
     where: { fecha },
-    include: { model: Categoria }
+    include: { model: Categoria, as: 'Categoria' } // Usa alias 'Categoria'
   });
 };
 
-// Obtener productos de una sesión
+// Obtener sesiones por categoría
+const getSesionesPorCategoria = async (nombreCategoria) => {
+  const categoria = await Categoria.findOne({ where: { nombre: nombreCategoria } });
+  if (!categoria) return [];
+  return await Sesion.findAll({
+    where: { id_categoria: categoria.id_categoria },
+    include: { model: Categoria, as: 'Categoria' }, // Usa alias 'Categoria'
+    order: [["fecha", "DESC"]]
+  });
+};
+
+// Obtener productos de una sesión, incluyendo todos los precios y el último precio de la sesión
 const getProductosPorSesion = async (id_sesion) => {
   return await Producto.findAll({
     include: [
       { model: Tipo },
       {
         model: Precio,
+        as: 'Precios',    // todos los precios (sin filtro para sesión)
+        required: false
+      },
+      {
+        model: Precio,
+        as: 'ultimoPrecio',  // precio sólo para esta sesión
         where: { id_sesion },
-        required: true
+        required: false
       }
     ]
+  });
+};
+
+// Obtener comentarios de una sesión
+const obtenerComentariosPorSesion = async (id_sesion) => {
+  return await SesionAlmacenanTipo.findAll({
+    where: { id_sesion }
   });
 };
 
@@ -46,7 +70,7 @@ const crearSesionYPrecios = async ({ id_categoria, productos, comentarios_tipo, 
     };
 
     if (!base.contribuye) {
-      return base; // No añade precios
+      return base;
     }
 
     if (prod.tipo_precio === 0) {
@@ -84,7 +108,7 @@ const crearSesionYPrecios = async ({ id_categoria, productos, comentarios_tipo, 
 // Obtener datos para el PDF
 const obtenerDatosParaPDF = async (id_sesion) => {
   const sesion = await Sesion.findByPk(id_sesion, {
-    include: [{ model: Categoria, attributes: ["nombre"] }]
+    include: [{ model: Categoria, as: 'Categoria', attributes: ["nombre"] }]  // IMPORTANTE: usar alias
   });
 
   const productos = await Producto.findAll({
@@ -92,6 +116,7 @@ const obtenerDatosParaPDF = async (id_sesion) => {
       { model: Tipo },
       {
         model: Precio,
+        as: 'Precios',
         where: { id_sesion },
         required: false
       }
@@ -133,14 +158,16 @@ const obtenerDatosParaPDF = async (id_sesion) => {
 
   return {
     fecha: sesion.fecha,
-    categoria: sesion.Categorium?.nombre || "",
+    categoria: sesion.Categoria?.nombre || "",  // corregido typo aquí
     tipos: Object.values(tiposMap)
   };
 };
 
 module.exports = {
   getSesionesPorFecha,
+  getSesionesPorCategoria,
   getProductosPorSesion,
+  obtenerComentariosPorSesion,
   crearSesionYPrecios,
   obtenerDatosParaPDF
 };

@@ -13,13 +13,23 @@ Producto.belongsTo(Categoria, { foreignKey: 'id_categoria' });
 Tipo.hasMany(Producto, { foreignKey: 'id_tipo' });
 Producto.belongsTo(Tipo, { foreignKey: 'id_tipo' });
 
+/* // Categoría - Sesion
+Categoria.hasMany(Sesion, { foreignKey: 'id_categoria' });
+Sesion.belongsTo(Categoria, { foreignKey: 'id_categoria' }); */
+
 // Categoría - Sesion
 Categoria.hasMany(Sesion, { foreignKey: 'id_categoria' });
-Sesion.belongsTo(Categoria, { foreignKey: 'id_categoria' });
+Sesion.belongsTo(Categoria, { foreignKey: 'id_categoria', as: 'Categoria' });
 
-// Producto - Precio
-Producto.hasMany(Precio, { foreignKey: 'id_producto' });
-Precio.belongsTo(Producto, { foreignKey: 'id_producto' });
+
+// Producto - Precio (todos los precios)
+Producto.hasMany(Precio, { foreignKey: 'id_producto', as: 'Precios' });
+
+// Producto - Precio (último precio por sesión)
+Producto.hasOne(Precio, { foreignKey: 'id_producto', as: 'ultimoPrecio' });
+
+// Precio pertenece a Producto (solo UNA vez, con alias 'Producto')
+Precio.belongsTo(Producto, { foreignKey: 'id_producto', as: 'Producto' });
 
 // Sesion - Precio
 Sesion.hasMany(Precio, { foreignKey: 'id_sesion' });

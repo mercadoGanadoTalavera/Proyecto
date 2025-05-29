@@ -10,13 +10,43 @@ const {
   obtenerDatosParaPDF
 } = require("../services/pdfService");
 
+const { obtenerComentariosPorSesion } = require("../services/sesionService");
+
+// Obtener todas las sesiones (opcional: filtrar por categoría)
+const getAllSesiones = async (req, res) => {
+  try {
+    const { categoria } = req.query;
+
+    const where = {};
+    if (categoria) {
+      const categoriaEncontrada = await Categoria.findOne({ where: { nombre: categoria } });
+      if (categoriaEncontrada) {
+        where.id_categoria = categoriaEncontrada.id_categoria;
+      } else {
+        return res.json([]);
+      }
+    }
+
+    const sesiones = await Sesion.findAll({
+      where,
+      include: { model: Categoria, as: 'Categoria' },  // usa alias
+      order: [["fecha", "DESC"]]
+    });
+
+    res.json(sesiones);
+  } catch (error) {
+    console.error("Error al obtener sesiones:", error);
+    res.status(500).json({ error: "Error al obtener sesiones" });
+  }
+};
+
 // Obtener sesiones por fecha
 const getSesionesPorFecha = async (req, res) => {
   try {
     const { fecha } = req.query;
     const sesiones = await Sesion.findAll({
       where: { fecha },
-      include: { model: Categoria }
+      include: { model: Categoria, as: 'Categoria' } // usa alias
     });
     res.json(sesiones);
   } catch (error) {
@@ -34,6 +64,7 @@ const getProductosDeSesion = async (req, res) => {
         { model: Tipo },
         {
           model: Precio,
+          as: 'ultimoPrecio',  // usa alias del precio para la sesión específica
           where: { id_sesion },
           required: true
         }
@@ -43,6 +74,18 @@ const getProductosDeSesion = async (req, res) => {
   } catch (error) {
     console.error("Error obteniendo productos:", error);
     res.status(500).json({ error: "Error obteniendo productos de sesión" });
+  }
+};
+
+// Obtener comentarios de la sesión
+const getComentariosPorSesion = async (req, res) => {
+  try {
+    const { id_sesion } = req.params;
+    const comentarios = await obtenerComentariosPorSesion(id_sesion);
+    res.json(comentarios);
+  } catch (error) {
+    console.error("Error obteniendo comentarios:", error);
+    res.status(500).json({ error: "Error obteniendo comentarios" });
   }
 };
 
@@ -124,8 +167,10 @@ const descargarPDF = async (req, res) => {
 };
 
 module.exports = {
+  getAllSesiones,
   getSesionesPorFecha,
   getProductosDeSesion,
+  getComentariosPorSesion,
   crearSesionYPrecios,
   descargarPDF
 };

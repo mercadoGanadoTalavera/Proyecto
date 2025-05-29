@@ -8,36 +8,29 @@ const Producto = require("../database/models/Producto");
 const Tipo = require("../database/models/Tipo");
 const Precio = require("../database/models/Precio");
 const SesionAlmacenanTipo = require("../database/models/SesionAlmacenanTipo");
+const { Op } = require("sequelize");
 
 function formatearPrecio(valor) {
   if (valor === null || valor === undefined || valor === 0 || valor === '0.00' || valor === 0.00) {
     return "S/C";
   }
-  return parseFloat(valor).toFixed(2).replace(".", ",");
+  const num = parseFloat(valor);
+  return isNaN(num) ? "S/C" : num.toFixed(2).replace(".", ",");
 }
-
 
 function formatearFecha(fechaStr) {
   const [a, m, d] = fechaStr.split("-");
   return `${d}/${m}/${a}`;
 }
 
-
-
-function format(contribuye, ...valores) {
-  if (contribuye === false) return "S/C";
-
-  const todosInvalidos = valores.every(v =>
-    v === null || v === undefined || v === "" || isNaN(v) || parseFloat(v) === 0
-  );
-
-  if (todosInvalidos) return "S/C";
-
-  const valor = valores.find(v =>
-    v !== null && v !== undefined && v !== "" && !isNaN(v) && parseFloat(v) !== 0
-  );
-
-  return parseFloat(valor).toFixed(2).replace(".", ",");
+function limpiarNombre(str) {
+  return str
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .toLowerCase();
 }
 
 function drawTableHeaders(doc) {
@@ -46,14 +39,12 @@ function drawTableHeaders(doc) {
   let x = 40;
   let y = doc.y;
 
-  // Primera fila
   doc.fillColor(azul).rect(x, y, ancho.reduce((a, b) => a + b, 0), 15).fill();
   doc.fillColor("white").font("Helvetica-Bold").fontSize(8);
   doc.text("TIPOS DE CEREAL", x + 3, y + 3, { width: ancho[0], align: "left" });
   doc.text("PRECIO ANTERIOR", x + ancho[0], y + 3, { width: ancho[1] + ancho[2], align: "center" });
   doc.text("PRECIO ACTUAL", x + ancho[0] + ancho[1] + ancho[2], y + 3, { width: ancho[3] + ancho[4], align: "center" });
 
-  // Segunda fila
   y += 15;
   doc.fillColor(azul).rect(x, y, ancho.reduce((a, b) => a + b, 0), 15).fill();
   doc.fillColor("white").font("Helvetica-Bold").fontSize(8);
@@ -83,7 +74,7 @@ function drawRow(doc, cols) {
 
 const obtenerDatosParaPDF = async (id_sesion) => {
   const sesion = await Sesion.findByPk(id_sesion, {
-    include: [{ model: Categoria, attributes: ["nombre"] }]
+    include: [{ model: Categoria, as: 'Categoria', attributes: ["nombre"] }]
   });
 
   const productos = await Producto.findAll({
@@ -91,8 +82,9 @@ const obtenerDatosParaPDF = async (id_sesion) => {
       { model: Tipo },
       {
         model: Precio,
+        as: 'Precios',
         where: { id_sesion },
-        required: true
+        required: false
       }
     ]
   });
@@ -100,19 +92,42 @@ const obtenerDatosParaPDF = async (id_sesion) => {
   const comentarios = await SesionAlmacenanTipo.findAll({ where: { id_sesion } });
 
   const tiposMap = {};
-  productos.forEach(p => {
+  for (const p of productos) {
     const tipo = p.Tipo?.nombre || "Sin tipo";
     if (!tiposMap[tipo]) tiposMap[tipo] = { nombre: tipo, productos: [] };
-    const precio = p.Precios[0];
-tiposMap[tipo].productos.push({
-  nombre: p.nombre,
-  contribuye: precio.contribuye,
-  anterior_min: format(precio.contribuye, precio.precio_anterior_min ?? precio.precio_anterior),
-  anterior_max: format(precio.contribuye, precio.precio_anterior_max ?? precio.precio_anterior),
-  actual_min: format(precio.contribuye, precio.precio_actual_min ?? precio.precio_actual),
-  actual_max: format(precio.contribuye, precio.precio_actual_max ?? precio.precio_actual)
-});
-  });
+
+    const precioActual = p.Precios?.[0];
+
+    let anterior_min = "S/C";
+    let anterior_max = "S/C";
+
+    // Siempre buscar el último precio anterior registrado (sea o no contribuyente)
+    const precioAnterior = await Precio.findOne({
+      where: {
+        id_producto: p.id_producto,
+        id_sesion: { [Op.lt]: id_sesion }
+      },
+      order: [["id_sesion", "DESC"]]
+    });
+
+    if (precioAnterior) {
+      if (p.tipo_precio === 0) {
+        anterior_min = anterior_max = formatearPrecio(precioAnterior.precio_actual);
+      } else {
+        anterior_min = formatearPrecio(precioAnterior.precio_actual_min);
+        anterior_max = formatearPrecio(precioAnterior.precio_actual_max);
+      }
+    }
+
+    tiposMap[tipo].productos.push({
+      nombre: p.nombre,
+      contribuye: precioActual?.contribuye ?? true,
+      anterior_min,
+      anterior_max,
+      actual_min: formatearPrecio(precioActual?.precio_actual_min ?? precioActual?.precio_actual),
+      actual_max: formatearPrecio(precioActual?.precio_actual_max ?? precioActual?.precio_actual)
+    });
+  }
 
   comentarios.forEach(c => {
     const tipo = productos.find(p => p.id_tipo === c.id_tipo)?.Tipo?.nombre;
@@ -123,16 +138,15 @@ tiposMap[tipo].productos.push({
 
   return {
     fecha: sesion.fecha,
-    categoria: sesion.Categorium?.nombre || "",
+    categoria: sesion.Categoria?.nombre || "",
     tipos: Object.values(tiposMap)
   };
 };
 
 const generarPDFPorSesion = async (id_sesion) => {
   const datos = await obtenerDatosParaPDF(id_sesion);
-  const nombreArchivo = `mesa_${datos.categoria}_${datos.fecha}.pdf`.replace(/\s+/g, "_");
 
-  // << IMPORTANTE: CAMBIO AQUÍ >>
+  const nombreArchivo = `mesa_${limpiarNombre(datos.categoria)}_${limpiarNombre(datos.fecha)}.pdf`;
   const ruta = path.join(__dirname, "../../public/pdf", nombreArchivo);
 
   if (!fs.existsSync(path.dirname(ruta))) {
@@ -181,6 +195,16 @@ const generarPDFPorSesion = async (id_sesion) => {
   doc.end();
   return ruta;
 };
+
+function limpiarNombre(str) {
+  return str
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .toLowerCase();
+}
 
 module.exports = {
   generarPDFPorSesion
