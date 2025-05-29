@@ -33,26 +33,36 @@ function limpiarNombre(str) {
     .toLowerCase();
 }
 
-function drawTableHeaders(doc) {
+function drawTableHeaders(doc, categoria) {
   const azul = "#003366";
   const ancho = [160, 70, 70, 70, 70];
   let x = 40;
   let y = doc.y;
 
-  doc.fillColor(azul).rect(x, y, ancho.reduce((a, b) => a + b, 0), 15).fill();
-  doc.fillColor("white").font("Helvetica-Bold").fontSize(8);
-  doc.text("TIPOS DE CEREAL", x + 3, y + 3, { width: ancho[0], align: "left" });
-  doc.text("PRECIO ANTERIOR", x + ancho[0], y + 3, { width: ancho[1] + ancho[2], align: "center" });
-  doc.text("PRECIO ACTUAL", x + ancho[0] + ancho[1] + ancho[2], y + 3, { width: ancho[3] + ancho[4], align: "center" });
+  if (categoria === "Cereales") {
+    doc.fillColor(azul).rect(x, y, ancho.reduce((a, b) => a + b, 0), 15).fill();
+    doc.fillColor("white").font("Helvetica-Bold").fontSize(8);
+    doc.text("TIPOS DE CEREAL", x + 3, y + 3, { width: ancho[0], align: "left" });
+    doc.text("PRECIO ANTERIOR", x + ancho[0], y + 3, { width: ancho[1] + ancho[2], align: "center" });
+    doc.text("PRECIO ACTUAL", x + ancho[0] + ancho[1] + ancho[2], y + 3, { width: ancho[3] + ancho[4], align: "center" });
 
-  y += 15;
-  doc.fillColor(azul).rect(x, y, ancho.reduce((a, b) => a + b, 0), 15).fill();
-  doc.fillColor("white").font("Helvetica-Bold").fontSize(8);
-  doc.text("", x, y + 3, { width: ancho[0] });
-  doc.text("MIN", x + ancho[0], y + 3, { width: ancho[1], align: "center" });
-  doc.text("MAX", x + ancho[0] + ancho[1], y + 3, { width: ancho[2], align: "center" });
-  doc.text("MIN", x + ancho[0] + ancho[1] + ancho[2], y + 3, { width: ancho[3], align: "center" });
-  doc.text("MAX", x + ancho[0] + ancho[1] + ancho[2] + ancho[3], y + 3, { width: ancho[4], align: "center" });
+    y += 15;
+    doc.fillColor(azul).rect(x, y, ancho.reduce((a, b) => a + b, 0), 15).fill();
+    doc.fillColor("white").font("Helvetica-Bold").fontSize(8);
+    doc.text("", x, y + 3, { width: ancho[0] });
+    doc.text("MIN", x + ancho[0], y + 3, { width: ancho[1], align: "center" });
+    doc.text("MAX", x + ancho[0] + ancho[1], y + 3, { width: ancho[2], align: "center" });
+    doc.text("MIN", x + ancho[0] + ancho[1] + ancho[2], y + 3, { width: ancho[3], align: "center" });
+    doc.text("MAX", x + ancho[0] + ancho[1] + ancho[2] + ancho[3], y + 3, { width: ancho[4], align: "center" });
+  } else {
+    doc.fillColor(azul).rect(x, y, ancho.reduce((a, b) => a + b, 0), 15).fill();
+    doc.fillColor("white").font("Helvetica-Bold").fontSize(8);
+    doc.text("PRODUCTO", x + 3, y + 3, { width: ancho[0], align: "left" });
+    doc.text("ANT. MIN", x + ancho[0], y + 3, { width: ancho[1], align: "center" });
+    doc.text("ANT. MAX", x + ancho[0] + ancho[1], y + 3, { width: ancho[2], align: "center" });
+    doc.text("ACT. MIN", x + ancho[0] + ancho[1] + ancho[2], y + 3, { width: ancho[3], align: "center" });
+    doc.text("ACT. MAX", x + ancho[0] + ancho[1] + ancho[2] + ancho[3], y + 3, { width: ancho[4], align: "center" });
+  }
 
   doc.moveDown(2);
 }
@@ -60,11 +70,18 @@ function drawTableHeaders(doc) {
 function drawRow(doc, cols) {
   const colWidths = [160, 70, 70, 70, 70];
   let x = 40;
+  const rowHeight = 15;
+
+  // Salto de página si queda poco espacio
+  if (doc.y + rowHeight > doc.page.height - doc.page.margins.bottom) {
+    doc.addPage();
+  }
+
   const y = doc.y;
   doc.font("Helvetica").fontSize(8).fillColor("black");
 
   for (let i = 0; i < cols.length; i++) {
-    doc.rect(x, y, colWidths[i], 15).stroke();
+    doc.rect(x, y, colWidths[i], rowHeight).stroke();
     doc.text(cols[i], x + 3, y + 4, { width: colWidths[i] - 6, align: i === 0 ? "left" : "right" });
     x += colWidths[i];
   }
@@ -78,6 +95,7 @@ const obtenerDatosParaPDF = async (id_sesion) => {
   });
 
   const productos = await Producto.findAll({
+    where: { id_categoria: sesion.id_categoria },
     include: [
       { model: Tipo },
       {
@@ -101,7 +119,6 @@ const obtenerDatosParaPDF = async (id_sesion) => {
     let anterior_min = "S/C";
     let anterior_max = "S/C";
 
-    // Siempre buscar el último precio anterior registrado (sea o no contribuyente)
     const precioAnterior = await Precio.findOne({
       where: {
         id_producto: p.id_producto,
@@ -164,13 +181,30 @@ const generarPDFPorSesion = async (id_sesion) => {
 
   doc.fillColor("black").font("Helvetica-Bold").fontSize(12);
   doc.text(`Precios Lonja de ${datos.categoria} para el día ${formatearFecha(datos.fecha)}`, { align: "center" });
-  doc.font("Helvetica").fontSize(9).text(
-    "Precios en origen agricultor sobre camión en Euros/Tonelada, condiciones de calidad O.C.M. Campaña 2024-2025",
-    { align: "center" }
-  );
+  if (datos.categoria === "Cereales") {
+    doc.font("Helvetica").fontSize(9).text(
+      "Precios en origen agricultor sobre camión en Euros/Tonelada, condiciones de calidad O.C.M. Campaña 2024-2025",
+      { align: "center" }
+    );
+  } else if (datos.categoria === "Vacuno-Ovino") {
+    doc.font("Helvetica").fontSize(9).text(
+      "Precios medios orientativos de los animales vendidos en el mercado semanal.",
+      { align: "center" }
+    );
+  } else if (datos.categoria === "Frutas") {
+    doc.font("Helvetica").fontSize(9).text(
+      "Precios mayoristas de frutas en mercados centrales.",
+      { align: "center" }
+    );
+  } else {
+    doc.font("Helvetica").fontSize(9).text(
+      "Precios orientativos según información de mercado.",
+      { align: "center" }
+    );
+  }
   doc.moveDown();
 
-  drawTableHeaders(doc);
+  drawTableHeaders(doc, datos.categoria);
 
   datos.tipos.forEach(t => {
     doc.moveDown(0.5);
@@ -195,16 +229,6 @@ const generarPDFPorSesion = async (id_sesion) => {
   doc.end();
   return ruta;
 };
-
-function limpiarNombre(str) {
-  return str
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .toLowerCase();
-}
 
 module.exports = {
   generarPDFPorSesion
