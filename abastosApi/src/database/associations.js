@@ -4,6 +4,7 @@ const Precio = require("./models/Precio");
 const Tipo = require("./models/Tipo");
 const Sesion = require("./models/Sesion");
 const SesionAlmacenanTipo = require("./models/SesionAlmacenanTipo");
+const NombreSecundario = require("./models/NombreSecundario");
 
 // Categoría - Producto
 Categoria.hasMany(Producto, { foreignKey: 'id_categoria' });
@@ -45,6 +46,15 @@ Sesion.belongsToMany(Tipo, {
     through: SesionAlmacenanTipo,
     foreignKey: 'id_sesion',
     otherKey: 'id_tipo'
+});
+// Un producto tiene un nombre secundario
+Producto.hasOne(NombreSecundario, {
+  foreignKey: "id_producto",
+  as: "nombres"
+});
+
+NombreSecundario.belongsTo(Producto, {
+  foreignKey: "id_producto",
 });
 
 module.exports = {

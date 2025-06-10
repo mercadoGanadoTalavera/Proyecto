@@ -9,16 +9,30 @@ const getAllProductos = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-//Obtener productos por categoria
+
+// Obtener productos por categoría (con la modificación para pistacho y almendra)
 const getProductosByCategoria = async (req, res) => {
     try {
-        const productos = await productoService.getProductosByCategoria(req.params.id);
+        const { id, tipo } = req.params;
+        let productos;
+        
+        if (id == 4 && tipo) { // Aquí el id=4 es para la categoría "Frutos Secos"
+            if (tipo === "pistacho") {
+                productos = await productoService.getProductosByTipo([13, 14, 17, 18]);
+            } else if (tipo === "almendra") {
+                productos = await productoService.getProductosByTipo([15, 16]);
+            } else {
+                return res.status(400).json({ error: "Tipo de producto inválido. Use 'pistacho' o 'almendra'." });
+            }
+        } else {
+            productos = await productoService.getProductosByCategoria(id);
+        }
+
         res.status(200).json(productos);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 // Obtener un producto por ID
 const getProductoById = async (req, res) => {
@@ -61,6 +75,7 @@ const deleteProducto = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 const getProductosPorFecha = async (req, res) => {
     try {
         const { fecha } = req.query;
